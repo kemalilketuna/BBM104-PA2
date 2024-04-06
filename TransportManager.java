@@ -59,8 +59,8 @@ class Voyage{
     }
 
     public void printLayout(){
-        System.out.println("Voyage " + this.id);
-        System.out.println(departure + "-" + arrival);
+        System.out.println(InfoMessages.getVoyage(this.id));
+        System.out.println(InfoMessages.getVoyageRoute(this.departure, this.arrival));
         for(int i = 0; i < this.row_count; i++){
             for(int j = 0; j < this.column_count; j++){
                 System.out.print(this.seats[i][j] ? "X" : "*");
@@ -69,23 +69,38 @@ class Voyage{
             }
             System.out.println();
         }
-        System.out.println("Revenue: " + String.format("%.2f", this.revenue));
+        System.out.println(InfoMessages.getRevenueMessage(this.revenue));
     }
 
     public void cancelVoyage(){
+        System.out.println(InfoMessages.getVoyageSuccesfullyCancelled(this.id));
+        System.out.println(InfoMessages.VOYAGE_DETAILS);
+        System.out.println(InfoMessages.getRevenueMessage(this.revenue));
+        System.out.println(InfoMessages.getVoyageRoute(this.departure, this.arrival));
+      
+        for(int i = 0; i < this.row_count; i++){
+            for(int j = 0; j < this.column_count; j++){
+                System.out.print(this.seats[i][j] ? "X" : "*");
+                if(column_count == 3 && j == 0) System.out.print(" | ");
+                if(column_count == 4 && j == 1) System.out.print(" | ");
+            }
+            System.out.println();
+        }
+
         for(int i = 0; i < this.row_count; i++){
             for(int j = 0; j < this.column_count; j++){
                 this.seats[i][j] = false;
                 this.revenue -= this.seat_price;
             }
         }
+        System.out.println(InfoMessages.getRevenueMessage(this.revenue));
     }
 }
 
-class STANDARDBus extends Voyage{
+class StandardBus extends Voyage{
     private float refundAmount;
 
-    public STANDARDBus(int id, int row_count, String departure, String arrival, int seat_price, int refundCut){
+    public StandardBus(int id, int row_count, String departure, String arrival, int seat_price, int refundCut){
         super(id, row_count, departure, arrival, 4, seat_price);
         refundAmount = (100.f - (float) refundCut / 100.f) * seat_price;
         // round to 2 decimal places float
@@ -123,6 +138,20 @@ class PremiumBus extends Voyage{
     }
 
     public void cancelVoyage(){
+        System.out.println(InfoMessages.getVoyageSuccesfullyCancelled(this.id));
+        System.out.println(InfoMessages.VOYAGE_DETAILS);
+        System.out.println(InfoMessages.getRevenueMessage(this.revenue));
+        System.out.println(InfoMessages.getVoyageRoute(this.departure, this.arrival));
+      
+        for(int i = 0; i < this.row_count; i++){
+            for(int j = 0; j < this.column_count; j++){
+                System.out.print(this.seats[i][j] ? "X" : "*");
+                if(column_count == 3 && j == 0) System.out.print(" | ");
+                if(column_count == 4 && j == 1) System.out.print(" | ");
+            }
+            System.out.println();
+        }
+
         for(int i = 0; i < this.row_count; i++){
             for(int j = 0; j < this.column_count; j++){
                 this.seats[i][j] = false;
@@ -130,6 +159,8 @@ class PremiumBus extends Voyage{
                 else this.revenue -= this.seat_price;
             }
         }
+
+        System.out.println(InfoMessages.getRevenueMessage(this.revenue));
     }
 }
 
@@ -140,7 +171,6 @@ class MiniBus extends Voyage{
 }
 
 public class TransportManager{
-    // use tree map
     private Map<Integer, Voyage> Voyages = new TreeMap<>();
 
 
@@ -154,31 +184,51 @@ public class TransportManager{
     Z_REPORT
     */
 
+    private boolean isNewVoyageIdValid(int id){
+        if (id <= 0){
+            System.out.println(ErrorMessages.getVoyageIdMustPositive(id));
+            return false;
+        }
 
-    private void addSTANDARDVoyage(int id, String departure, String arrival, int row_count, int seat_price, int refundCut){
-        Voyages.put(id, new STANDARDBus(id, row_count, departure, arrival, seat_price, refundCut));
+        if (Voyages.containsKey(id)){
+            System.out.println(ErrorMessages.getVoyageIdAlreadyUsing(id));
+            return false;
+        }
+        return Voyages.containsKey(id);
     }
 
-    private void addPremiumVoyage(int id, String departure, String arrival, int row_count, int seat_price, int refundCut, int premiumFee){
+    private boolean isVoyageIdValid(int id){
+        if (id <= 0){
+            System.out.println(ErrorMessages.getVoyageIdMustPositive(id));
+            return false;
+        }
+
+        if (!Voyages.containsKey(id)){
+            System.out.println(ErrorMessages.getNoVoyageWithId(id));
+            return false;
+        }
+        return true;
+    }
+
+    public void addStandardVoyage(int id, String departure, String arrival, int row_count, int seat_price, int refundCut){
+        if (!isNewVoyageIdValid(id)) return;
+        Voyages.put(id, new StandardBus(id, row_count, departure, arrival, seat_price, refundCut));
+    }
+
+    public void addPremiumVoyage(int id, String departure, String arrival, int row_count, int seat_price, int refundCut, int premiumFee){
+        if (!isNewVoyageIdValid(id)) return;
         Voyages.put(id, new PremiumBus(id, row_count, departure, arrival, seat_price, refundCut, premiumFee));
     }
 
-    private void addMiniVoyage(int id, String departure, String arrival, int row_count, int seat_price){
+    public void addMiniVoyage(int id, String departure, String arrival, int row_count, int seat_price){
+        if (!isNewVoyageIdValid(id)) return;
         Voyages.put(id, new MiniBus(id, row_count, departure, arrival, seat_price));
     }
 
-    public void addVoyage(VoyageTypes type, int id, String departure, String arrival, int row_count, int seat_price, int refundCut, int premiumFee){
-        switch(type){
-            case STANDARD:
-                addSTANDARDVoyage(id, departure, arrival, row_count, seat_price, refundCut);
-                break;
-            case PREMIUM:
-                addPremiumVoyage(id, departure, arrival, row_count, seat_price, refundCut, premiumFee);
-                break;
-            case MINIBUS:
-                addMiniVoyage(id, departure, arrival, row_count, seat_price);
-                break;
-        }
+    public void cancelVoyage(int id){
+        if (!isVoyageIdValid(id)) return;
+        Voyage t = Voyages.get(id);
+        t.cancelVoyage();
     }
 
     public void zReport(){
