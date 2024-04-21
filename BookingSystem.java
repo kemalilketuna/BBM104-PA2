@@ -3,34 +3,17 @@ import java.io.*;
 class CommandExecuter{
     protected VoyageManager transportManager = new VoyageManager();
 
-    /*
-    Command list
-    INIT_VOYAGE
-    SELL_TICKET
-    REFUND_TICKET
-    PRINT_VOYAGE
-    CANCEL_VOYAGE
-    Z_REPORT
-    */
-
-    /*
-    This command’s mechanics are as follows:
-    INIT_VOYAGE <TAB> Minibus <TAB> <ID> <TAB> <FROM> <TAB> <TO> <TAB> <#ROWS> <TAB> <PRICE>
-    INIT_VOYAGE <TAB> Standard <TAB> <ID> <TAB> <FROM> <TAB> <TO> <TAB> <#ROWS> <TAB> <PRICE> <TAB> <REFUND_CUT>
-    INIT_VOYAGE <TAB> Premium <TAB> <ID> <TAB> <FROM> <TAB> <TO> <TAB> <#ROWS> <TAB> <PRICE> <TAB> <REFUND_CUT> <TAB> <PREMIUM_FEE>
-    */
-
     private void addVoyageCommand(String[] tokens){
         try{
             switch (tokens[1]) {
                 case "Minibus":
-                    transportManager.addMinibusVoyage(Integer.parseInt(tokens[2]), tokens[3], tokens[4], Integer.parseInt(tokens[5]), Integer.parseInt(tokens[6]));
+                    transportManager.addMinibusVoyage(Integer.parseInt(tokens[2]), tokens[3], tokens[4], Integer.parseInt(tokens[5]), Float.parseFloat(tokens[6]));
                     break;
                 case "Standard":
-                    transportManager.addStandardVoyage(Integer.parseInt(tokens[2]), tokens[3], tokens[4], Integer.parseInt(tokens[5]), Integer.parseInt(tokens[6]), Integer.parseInt(tokens[7]));
+                    transportManager.addStandardVoyage(Integer.parseInt(tokens[2]), tokens[3], tokens[4], Integer.parseInt(tokens[5]), Float.parseFloat(tokens[6]), Integer.parseInt(tokens[7]));
                     break;
                 case "Premium":
-                    transportManager.addPremiumVoyage(Integer.parseInt(tokens[2]), tokens[3], tokens[4], Integer.parseInt(tokens[5]), Integer.parseInt(tokens[6]), Integer.parseInt(tokens[7]), Integer.parseInt(tokens[8]));
+                    transportManager.addPremiumVoyage(Integer.parseInt(tokens[2]), tokens[3], tokens[4], Integer.parseInt(tokens[5]), Float.parseFloat(tokens[6]), Integer.parseInt(tokens[7]), Integer.parseInt(tokens[8]));
                     break;
                 default:
                     throw new Exception();
@@ -54,7 +37,7 @@ class CommandExecuter{
             String[] seats = tokens[2].split("_");
             int[] seatNumbers = new int[seats.length];
             for(int i = 0; i < seats.length; i++){
-                seatNumbers[i] = Integer.parseInt(seats[i]);
+                seatNumbers[i] = Integer.parseInt(seats[i]) - 1;
             }
             transportManager.sellTickets(Integer.parseInt(tokens[1]), seatNumbers);
         }catch(Exception e){
@@ -67,7 +50,7 @@ class CommandExecuter{
             String[] seats = tokens[2].split("_");
             int[] seatNumbers = new int[seats.length];
             for(int i = 0; i < seats.length; i++){
-                seatNumbers[i] = Integer.parseInt(seats[i]);
+                seatNumbers[i] = Integer.parseInt(seats[i]) - 1;
             }
             transportManager.refundTickets(Integer.parseInt(tokens[1]), seatNumbers);
         }catch(Exception e){
@@ -88,7 +71,7 @@ class CommandExecuter{
     }
 
     public void executeCommand(String command){
-        System.out.println(InfoMessages.getCommandMessage(command));
+        System.out.println(InfoMessages.getCommandMessageString(command));
 
         String tokens[] = command.split("\t");
         switch (tokens[0]) {

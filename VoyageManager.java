@@ -8,9 +8,9 @@ class Voyage{
     private int column_count;
     private float seat_price;
     private boolean[][] seats;
-    protected float revenue;
+    private float revenue;
 
-    public Voyage(int id, int row_count, String departure, String arrival, int column_count, int seat_price){
+    public Voyage(int id, int row_count, String departure, String arrival, int column_count, float seat_price){
         this.id = id;
         this.row_count = row_count;
         this.departure = departure;
@@ -85,8 +85,9 @@ class Voyage{
         for(int i = 0; i < this.row_count; i++){
             for(int j = 0; j < this.column_count; j++){
                 System.out.print(this.seats[i][j] ? "X" : "*");
-                if(column_count == 3 && j == 0) System.out.print(" | ");
-                if(column_count == 4 && j == 1) System.out.print(" | ");
+                if(column_count == 3 && j == 0) System.out.print(" |");
+                if(column_count == 4 && j == 1) System.out.print(" |");
+                if(j!= column_count - 1) System.out.print(" ");
             }
             System.out.println();
         }
@@ -96,25 +97,19 @@ class Voyage{
     public void processVoyageCancelling(){
         System.out.println(InfoMessages.getVoyageSuccesfullyCancelledString(this.id));
         System.out.println(InfoMessages.VOYAGE_DETAILS);
-        System.out.println(InfoMessages.getRevenueMessageString(this.revenue));
+        System.out.println(InfoMessages.getVoyageString(this.id));
         System.out.println(InfoMessages.getVoyageRouteString(this.departure, this.arrival));
       
         for(int i = 0; i < this.row_count; i++){
             for(int j = 0; j < this.column_count; j++){
                 System.out.print(this.seats[i][j] ? "X" : "*");
-                if(column_count == 3 && j == 0) System.out.print(" | ");
-                if(column_count == 4 && j == 1) System.out.print(" | ");
+                if(column_count == 3 && j == 0) System.out.print(" |");
+                if(column_count == 4 && j == 1) System.out.print(" |");
+                if(j!= column_count - 1) System.out.print(" ");
             }
             System.out.println();
         }
-
-        for(int i = 0; i < this.row_count; i++){
-            for(int j = 0; j < this.column_count; j++){
-                this.seats[i][j] = false;
-                this.revenue -= this.seat_price;
-            }
-        }
-        System.out.println(InfoMessages.getRevenueMessageString(this.revenue));
+        System.out.println(InfoMessages.getRevenueMessageString(0.0f));
     }
 }
 
@@ -122,9 +117,9 @@ class Voyage{
 class StandardBus extends Voyage{
     private float refundAmount;
 
-    public StandardBus(int id, int row_count, String departure, String arrival, int seat_price, int refundCut){
+    public StandardBus(int id, int row_count, String departure, String arrival, float seat_price, int refundCut){
         super(id, row_count, departure, arrival, 4, seat_price);
-        refundAmount = (100.f - (float) refundCut / 100.f) * seat_price;
+        refundAmount = ((100.f - (float) refundCut) / 100.f) * seat_price;
         // round to 2 decimal places float
         refundAmount = (float) Math.round(refundAmount * 100) / 100;
     }
@@ -144,11 +139,11 @@ class PremiumBus extends Voyage{
     private float premiumPrice;
     private float premiumRefundAmount;
 
-    public PremiumBus(int id, int row_count, String departure, String arrival, int seat_price, int refundCut, int premiumFee){
+    public PremiumBus(int id, int row_count, String departure, String arrival, float seat_price, int refundCut, int premiumFee){
         super(id, row_count, departure, arrival, 3, seat_price);
-        refundAmount = (100.f - (float) refundCut / 100.f) * seat_price;
-        premiumPrice = (100.f + (float) premiumFee / 100.f) * seat_price;
-        premiumRefundAmount = (100.f - (float) refundCut / 100.f) * premiumPrice;
+        refundAmount = ((100.f - (float) refundCut) / 100.f) * seat_price;
+        premiumPrice = ((100.f + (float) premiumFee) / 100.f) * seat_price;
+        premiumRefundAmount = ((100.f - (float) refundCut) / 100.f) * premiumPrice;
         // round to 2 decimal places float
         refundAmount = (float) Math.round(refundAmount * 100) / 100;
         premiumPrice = (float) Math.round(premiumPrice * 100) / 100;
@@ -196,32 +191,25 @@ class PremiumBus extends Voyage{
     public void processVoyageCancelling(){
         System.out.println(InfoMessages.getVoyageSuccesfullyCancelledString(this.getId()));
         System.out.println(InfoMessages.VOYAGE_DETAILS);
-        System.out.println(InfoMessages.getRevenueMessageString(this.getRevenue()));
+        System.out.println(InfoMessages.getVoyageString(this.getId()));
         System.out.println(InfoMessages.getVoyageRouteString(this.getDeparture(), this.getArrival()));
       
         for(int i = 0; i < this.getRowCount(); i++){
             for(int j = 0; j < this.getColumnCount(); j++){
                 System.out.print(this.getSeats()[i][j] ? "X" : "*");
-                if(this.getColumnCount() == 3 && j == 0) System.out.print(" | ");
-                if(this.getColumnCount() == 4 && j == 1) System.out.print(" | ");
+                if(this.getColumnCount() == 3 && j == 0) System.out.print(" |");
+                if(this.getColumnCount() == 4 && j == 1) System.out.print(" |");
+                if(j!= this.getColumnCount() - 1) System.out.print(" ");
             }
             System.out.println();
         }
 
-        for(int i = 0; i < this.getRowCount(); i++){
-            for(int j = 0; j < this.getColumnCount(); j++){
-                this.getSeats()[i][j] = false;
-                if(i==0) this.revenue -= this.premiumPrice;
-                else this.revenue -= this.getSeatPrice();
-            }
-        }
-
-        System.out.println(InfoMessages.getRevenueMessageString(this.revenue));
+        System.out.println(InfoMessages.getRevenueMessageString(0.0f));
     }
 }
 
 class MiniBus extends Voyage{
-    public MiniBus(int id, int row_count, String departure, String arrival, int seat_price){
+    public MiniBus(int id, int row_count, String departure, String arrival, float seat_price){
         super(id, row_count, departure, arrival, 2, seat_price);
     }
 }
@@ -250,7 +238,7 @@ public class VoyageManager{
             System.out.println(ErrorMessages.getVoyageIdAlreadyUsingString(id));
             return false;
         }
-        return voyages.containsKey(id);
+        return true;
     }
 
     private boolean isVoyageIdValid(int id){
@@ -326,19 +314,20 @@ public class VoyageManager{
         System.out.println(InfoMessages.getSeatsRefundedString(seats, id, voyages.get(id).getDeparture(), voyages.get(id).getArrival(), beforeRefund - voyages.get(id).getRevenue()));
     }
 
-    public void addStandardVoyage(int id, String departure, String arrival, int row_count, int seat_price, int refundCut){
+    public void addStandardVoyage(int id, String departure, String arrival, int row_count, float seat_price, int refundCut){
         if (!isNewVoyageIdValid(id)) return;
         voyages.put(id, new StandardBus(id, row_count, departure, arrival, seat_price, refundCut));
         System.out.println(InfoMessages.getStandardVoyageInitializedString(id, departure, arrival, seat_price, row_count, refundCut));
     }
 
-    public void addPremiumVoyage(int id, String departure, String arrival, int row_count, int seat_price, int refundCut, int premiumFee){
+    public void addPremiumVoyage(int id, String departure, String arrival, int row_count, float seat_price, int refundCut, int premiumFee){
         if (!isNewVoyageIdValid(id)) return;
-        voyages.put(id, new PremiumBus(id, row_count, departure, arrival, seat_price, refundCut, premiumFee));
-        System.out.println(InfoMessages.getPremiumVoyageInitializedString(id, departure, arrival, seat_price, row_count, premiumFee, row_count, refundCut));
+        PremiumBus premiumBus = new PremiumBus(id, row_count, departure, arrival, seat_price, refundCut, premiumFee);
+        voyages.put(id, premiumBus);
+        System.out.println(InfoMessages.getPremiumVoyageInitializedString(id, departure, arrival, seat_price, row_count, premiumBus.getPremiumPrice(), refundCut));
     }
 
-    public void addMinibusVoyage(int id, String departure, String arrival, int row_count, int seat_price){
+    public void addMinibusVoyage(int id, String departure, String arrival, int row_count, float seat_price){
         if (!isNewVoyageIdValid(id)) return;
         voyages.put(id, new MiniBus(id, row_count, departure, arrival, seat_price));
         System.out.println(InfoMessages.getMinibusVoyageInitializedString(id, departure, arrival, seat_price, row_count));
@@ -349,7 +338,6 @@ public class VoyageManager{
         Voyage t = voyages.get(id);
         t.processVoyageCancelling();
         voyages.remove(id);
-        System.out.println(InfoMessages.getVoyageSuccesfullyCancelledString(id));
     }
 
     public void printVoyage(int id){
