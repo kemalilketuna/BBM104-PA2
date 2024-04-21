@@ -129,7 +129,7 @@ class Voyage {
             }
             System.out.println();
         }
-        System.out.println(InfoMessages.getRevenueMessageString(this.revenue));
+        System.out.println(InfoMessages.getRevenueMessageString(0.0f));
     }
 }
 
@@ -501,18 +501,11 @@ public class VoyageManager {
      * Generates a "Z Report" showing details and layout of all voyages.
      */
     public void zReport(){
-        System.out.println(InfoMessages.Z_REPORT);
-        System.out.println(InfoMessages.LINE);
-
-        if (voyages.isEmpty()){
-            System.out.println(InfoMessages.NO_VOYAGES_AVAILABLE);
-            System.out.println(InfoMessages.LINE);
-            return;
-        }
-
+        System.out.println("Z Report:");
+        System.out.println("----------------");
         for(Voyage t : voyages.values()){
             t.printLayout();
-            System.out.println(InfoMessages.LINE);
+            System.out.println("----------------");
         }
     }
 }

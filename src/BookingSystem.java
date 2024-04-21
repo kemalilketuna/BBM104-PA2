@@ -82,7 +82,7 @@ class CommandExecuter {
     /**
      * Executes the command to generate a Z report, which prints details and layout of all voyages.
      */
-    protected void zReportCommand(){
+    private void zReportCommand(){
         transportManager.zReport();
     }
 
@@ -144,18 +144,11 @@ public class BookingSystem{
 
         // read file line by line from args[0]
         BufferedReader br = new BufferedReader(new FileReader(args[0]));
-        String prevLine = "";
         String line;        
         while((line = br.readLine()) != null){
             line = line.trim();
             if(line.length() == 0) continue;
             commandExecuter.executeCommand(line);
-            prevLine = line;
-        }
-
-        // check if the last command was not Z_REPORT
-        if(!prevLine.equals("Z_REPORT")){
-            commandExecuter.zReportCommand();
         }
 
         // close the file
