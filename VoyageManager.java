@@ -1,13 +1,13 @@
 import java.util.*;
 
 class Voyage{
-    protected int id;
-    protected int row_count;
-    protected String departure;
-    protected String arrival;
-    protected int column_count;
-    protected float seat_price;
-    protected boolean[][] seats;
+    private int id;
+    private int row_count;
+    private String departure;
+    private String arrival;
+    private int column_count;
+    private float seat_price;
+    private boolean[][] seats;
     protected float revenue;
 
     public Voyage(int id, int row_count, String departure, String arrival, int column_count, int seat_price){
@@ -58,8 +58,6 @@ class Voyage{
         return row >= 0 && row < this.row_count && column >= 0 && column < this.column_count;
     }
 
-    
-
     public void printLayout(){
         System.out.println(InfoMessages.getVoyage(this.id));
         System.out.println(InfoMessages.getVoyageRoute(this.departure, this.arrival));
@@ -99,6 +97,7 @@ class Voyage{
     }
 }
 
+
 class StandardBus extends Voyage{
     private float refundAmount;
 
@@ -136,25 +135,25 @@ class PremiumBus extends Voyage{
     }
 
     public void processVoyageCancelling(){
-        System.out.println(InfoMessages.getVoyageSuccesfullyCancelled(this.id));
+        System.out.println(InfoMessages.getVoyageSuccesfullyCancelled(this.getId()));
         System.out.println(InfoMessages.VOYAGE_DETAILS);
-        System.out.println(InfoMessages.getRevenueMessage(this.revenue));
-        System.out.println(InfoMessages.getVoyageRoute(this.departure, this.arrival));
+        System.out.println(InfoMessages.getRevenueMessage(this.getRevenue()));
+        System.out.println(InfoMessages.getVoyageRoute(this.getDeparture(), this.getArrival()));
       
-        for(int i = 0; i < this.row_count; i++){
-            for(int j = 0; j < this.column_count; j++){
-                System.out.print(this.seats[i][j] ? "X" : "*");
-                if(column_count == 3 && j == 0) System.out.print(" | ");
-                if(column_count == 4 && j == 1) System.out.print(" | ");
+        for(int i = 0; i < this.getRowCount(); i++){
+            for(int j = 0; j < this.getColumnCount(); j++){
+                System.out.print(this.getSeats()[i][j] ? "X" : "*");
+                if(this.getColumnCount() == 3 && j == 0) System.out.print(" | ");
+                if(this.getColumnCount() == 4 && j == 1) System.out.print(" | ");
             }
             System.out.println();
         }
 
-        for(int i = 0; i < this.row_count; i++){
-            for(int j = 0; j < this.column_count; j++){
-                this.seats[i][j] = false;
+        for(int i = 0; i < this.getRowCount(); i++){
+            for(int j = 0; j < this.getColumnCount(); j++){
+                this.getSeats()[i][j] = false;
                 if(i==0) this.revenue -= this.premiumPrice;
-                else this.revenue -= this.seat_price;
+                else this.revenue -= this.getSeatPrice();
             }
         }
 
@@ -168,7 +167,7 @@ class MiniBus extends Voyage{
     }
 }
 
-public class TransportManager{
+public class VoyageManager{
     private Map<Integer, Voyage> voyages = new TreeMap<>();
 
 
@@ -213,8 +212,6 @@ public class TransportManager{
             System.out.println(ErrorMessages.NO_SEAT);
             return false;
         }
-
-        voyages.get(id).id = 45;
         return true;
     }
 

@@ -1,7 +1,7 @@
 import java.io.*;
 
 class CommandExecuter{
-    protected TransportManager transportManager = new TransportManager();
+    protected VoyageManager transportManager = new VoyageManager();
 
     /*
     Command list
@@ -78,7 +78,6 @@ class CommandExecuter{
                 printVoyageCommand(tokens);
                 break;
             default:
-                ErrorMessages.printCommandNotRecognized();
                 break;
         }
     }
