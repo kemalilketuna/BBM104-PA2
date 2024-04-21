@@ -41,6 +41,7 @@ class CommandExecuter{
     }
     
     private void sellTicketCommand(String[] tokens){
+
     }
 
     private void refundTicketCommand(String[] tokens){
@@ -77,6 +78,7 @@ class CommandExecuter{
                 printVoyageCommand(tokens);
                 break;
             default:
+                ErrorMessages.printCommandNotRecognized();
                 break;
         }
     }

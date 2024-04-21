@@ -52,11 +52,13 @@ class Voyage{
         return this.revenue;
     }
 
-    protected boolean isValidSeat(int seatNumber){
+    protected boolean isSeatNumberValid(int seatNumber){
         int row = seatNumber / this.column_count;
         int column = seatNumber % this.column_count;
         return row >= 0 && row < this.row_count && column >= 0 && column < this.column_count;
     }
+
+    
 
     public void printLayout(){
         System.out.println(InfoMessages.getVoyage(this.id));
@@ -72,7 +74,7 @@ class Voyage{
         System.out.println(InfoMessages.getRevenueMessage(this.revenue));
     }
 
-    public void cancelVoyage(){
+    public void processVoyageCancelling(){
         System.out.println(InfoMessages.getVoyageSuccesfullyCancelled(this.id));
         System.out.println(InfoMessages.VOYAGE_DETAILS);
         System.out.println(InfoMessages.getRevenueMessage(this.revenue));
@@ -125,10 +127,6 @@ class PremiumBus extends Voyage{
         premiumPrice = (float) Math.round(premiumPrice * 100) / 100;
     }
 
-    private Boolean isPremium(int seatNumber){
-        return seatNumber % column_count == 1;
-    }
-
     public float getRefundAmount(){
         return this.refundAmount;
     }
@@ -137,7 +135,7 @@ class PremiumBus extends Voyage{
         return this.premiumPrice;
     }
 
-    public void cancelVoyage(){
+    public void processVoyageCancelling(){
         System.out.println(InfoMessages.getVoyageSuccesfullyCancelled(this.id));
         System.out.println(InfoMessages.VOYAGE_DETAILS);
         System.out.println(InfoMessages.getRevenueMessage(this.revenue));
@@ -171,7 +169,7 @@ class MiniBus extends Voyage{
 }
 
 public class TransportManager{
-    private Map<Integer, Voyage> Voyages = new TreeMap<>();
+    private Map<Integer, Voyage> voyages = new TreeMap<>();
 
 
     /*
@@ -186,55 +184,70 @@ public class TransportManager{
 
     private boolean isNewVoyageIdValid(int id){
         if (id <= 0){
-            System.out.println(ErrorMessages.getVoyageIdMustPositive(id));
+            System.out.println(ErrorMessages.getVoyageIdMustPositiveString(id));
             return false;
         }
 
-        if (Voyages.containsKey(id)){
-            System.out.println(ErrorMessages.getVoyageIdAlreadyUsing(id));
+        if (voyages.containsKey(id)){
+            System.out.println(ErrorMessages.getVoyageIdAlreadyUsingString(id));
             return false;
         }
-        return Voyages.containsKey(id);
+        return voyages.containsKey(id);
     }
 
     private boolean isVoyageIdValid(int id){
         if (id <= 0){
-            System.out.println(ErrorMessages.getVoyageIdMustPositive(id));
+            System.out.println(ErrorMessages.getVoyageIdMustPositiveString(id));
             return false;
         }
 
-        if (!Voyages.containsKey(id)){
-            System.out.println(ErrorMessages.getNoVoyageWithId(id));
+        if (!voyages.containsKey(id)){
+            System.out.println(ErrorMessages.getNoVoyageWithIdString(id));
             return false;
         }
         return true;
     }
 
+    private boolean isSeatEmpty(int id, int seat){
+        if(!voyages.get(id).isSeatNumberValid(seat)){
+            System.out.println(ErrorMessages.NO_SEAT);
+            return false;
+        }
+
+        voyages.get(id).id = 45;
+        return true;
+    }
+
     public void addStandardVoyage(int id, String departure, String arrival, int row_count, int seat_price, int refundCut){
         if (!isNewVoyageIdValid(id)) return;
-        Voyages.put(id, new StandardBus(id, row_count, departure, arrival, seat_price, refundCut));
+        voyages.put(id, new StandardBus(id, row_count, departure, arrival, seat_price, refundCut));
     }
 
     public void addPremiumVoyage(int id, String departure, String arrival, int row_count, int seat_price, int refundCut, int premiumFee){
         if (!isNewVoyageIdValid(id)) return;
-        Voyages.put(id, new PremiumBus(id, row_count, departure, arrival, seat_price, refundCut, premiumFee));
+        voyages.put(id, new PremiumBus(id, row_count, departure, arrival, seat_price, refundCut, premiumFee));
     }
 
     public void addMiniVoyage(int id, String departure, String arrival, int row_count, int seat_price){
         if (!isNewVoyageIdValid(id)) return;
-        Voyages.put(id, new MiniBus(id, row_count, departure, arrival, seat_price));
+        voyages.put(id, new MiniBus(id, row_count, departure, arrival, seat_price));
     }
 
     public void cancelVoyage(int id){
         if (!isVoyageIdValid(id)) return;
-        Voyage t = Voyages.get(id);
-        t.cancelVoyage();
+        Voyage t = voyages.get(id);
+        t.processVoyageCancelling();
+        voyages.remove(id);
+    }
+
+    public void sellTickets(int id, int[] seats){
+    
     }
 
     public void zReport(){
         System.out.println("Z Report:");
         System.out.println("----------------");
-        for(Voyage t : Voyages.values()){
+        for(Voyage t : voyages.values()){
             t.printLayout();
             System.out.println("----------------");
         }

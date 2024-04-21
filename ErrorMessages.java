@@ -11,23 +11,27 @@ public class ErrorMessages {
     public static final String SEAT_ALREADY_SOLD = "ERROR: One or more seats already sold!"; 
     public static final String SEAT_ALREADY_EMPTY = "ERROR: One or more seats already empty!";
 
-    public static String getVoyageIdMustPositive(int id) {
+    public static String getVoyageIdMustPositiveString(int id) {
         return String.format(VOYAGEID_MUST_POSITIVE, id);
     }
 
-    public static String getVoyageIdAlreadyUsing(int id) {
+    public static String getVoyageIdAlreadyUsingString(int id) {
         return String.format(VOYAGEID_ALREADY_USING, id);
     }
 
-    public static String getNoVoyageWithId(int id) {
+    public static String getNoVoyageWithIdString(int id) {
         return String.format(NO_VOYAGE_WITH_ID, id);
     }
 
-    public static String getSeatIdMustPositive(int id) {
+    public static String getSeatIdMustPositiveString(int id) {
         return String.format(SEATID_MUST_POSITIVE, id);
     }
 
-    public static String getErrorgousUsage(String command) {
+    public static String getErrorgousUsageString(String command) {
         return String.format(ERRORGOUS_USAGE, command);
+    }
+
+    public static String getThereIsNoCommandString(String command){
+        return String.format(INVALID_COMMAND, command);
     }
 }
