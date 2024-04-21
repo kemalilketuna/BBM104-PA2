@@ -1,8 +1,17 @@
 import java.io.*;
 
-class CommandExecuter{
+/**
+ * The {@code CommandExecuter} class interprets and executes commands related to managing voyages.
+ * It acts as a controller that delegates commands to a {@link VoyageManager}.
+ */
+class CommandExecuter {
     protected VoyageManager transportManager = new VoyageManager();
 
+    /**
+     * Executes the command to add a new voyage based on the specified parameters.
+     * Supports adding minibuses, standard buses, and premium buses.
+     * @param tokens Array of strings containing command tokens.
+     */
     private void addVoyageCommand(String[] tokens){
         try{
             switch (tokens[1]) {
@@ -16,13 +25,17 @@ class CommandExecuter{
                     transportManager.addPremiumVoyage(Integer.parseInt(tokens[2]), tokens[3], tokens[4], Integer.parseInt(tokens[5]), Float.parseFloat(tokens[6]), Integer.parseInt(tokens[7]), Integer.parseInt(tokens[8]));
                     break;
                 default:
-                    throw new Exception();
+                    throw new Exception("Invalid vehicle type");
             }
         }catch(Exception e){
             System.out.println(ErrorMessages.getErrorgousUsageString(tokens[0]));
         }
     }
 
+    /**
+     * Executes the command to cancel a voyage based on the specified voyage ID.
+     * @param tokens Array of strings containing command tokens.
+     */
     private void cancelVoyageCommand(String[] tokens){
         try{
             transportManager.cancelVoyage(Integer.parseInt(tokens[1]));
@@ -32,6 +45,10 @@ class CommandExecuter{
         }
     }
     
+    /**
+     * Executes the command to sell tickets for a specified voyage and seats.
+     * @param tokens Array of strings containing command tokens.
+     */
     private void sellTicketCommand(String[] tokens){
         try{
             String[] seats = tokens[2].split("_");
@@ -45,6 +62,10 @@ class CommandExecuter{
         }
     }
 
+    /**
+     * Executes the command to refund tickets for a specified voyage and seats.
+     * @param tokens Array of strings containing command tokens.
+     */
     private void refundTicketCommand(String[] tokens){
         try{
             String[] seats = tokens[2].split("_");
@@ -58,10 +79,17 @@ class CommandExecuter{
         }
     }
 
+    /**
+     * Executes the command to generate a Z report, which prints details and layout of all voyages.
+     */
     private void zReportCommand(){
         transportManager.zReport();
     }
 
+    /**
+     * Executes the command to print the layout and details of a specific voyage.
+     * @param tokens Array of strings containing command tokens.
+     */
     private void printVoyageCommand(String[] tokens){
         try{
             transportManager.printVoyage(Integer.parseInt(tokens[1]));
@@ -70,6 +98,10 @@ class CommandExecuter{
         }
     }
 
+    /**
+     * Decodes and routes the command to the appropriate method.
+     * @param command A string representing the command to execute.
+     */
     public void executeCommand(String command){
         System.out.println(InfoMessages.getCommandMessageString(command));
 
@@ -99,6 +131,7 @@ class CommandExecuter{
         }
     }
 }
+
 
 public class BookingSystem{
     public static void main(String[] args) throws Exception{

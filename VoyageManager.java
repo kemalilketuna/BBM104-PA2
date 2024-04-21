@@ -305,9 +305,18 @@ class MiniBus extends Voyage {
 }
 
 
-public class VoyageManager{
+/**
+ * The {@code VoyageManager} class manages voyages and their associated operations
+ * such as selling tickets, refunding tickets, and adding new voyages.
+ */
+public class VoyageManager {
     private Map<Integer, Voyage> voyages = new TreeMap<>();
 
+    /**
+     * Checks if a new voyage ID is valid, i.e., not already used and positive.
+     * @param id the voyage ID to check
+     * @return {@code true} if the ID is valid, {@code false} otherwise
+     */
     private boolean isNewVoyageIdValid(int id){
         if (id <= 0){
             System.out.println(ErrorMessages.getVoyageIdMustPositiveString(id));
@@ -321,6 +330,11 @@ public class VoyageManager{
         return true;
     }
 
+    /**
+     * Validates whether a given voyage ID exists in the system and is positive.
+     * @param id the ID of the voyage to validate
+     * @return {@code true} if the ID is valid, {@code false} otherwise
+     */
     private boolean isVoyageIdValid(int id){
         if (id <= 0){
             System.out.println(ErrorMessages.getVoyageIdMustPositiveString(id));
@@ -334,6 +348,12 @@ public class VoyageManager{
         return true;
     }
 
+    /**
+     * Determines if a seat can be sold.
+     * @param id the ID of the voyage
+     * @param seat the seat number to check
+     * @return {@code true} if the seat can be sold, {@code false} if it cannot be sold
+     */
     private boolean canSeatSold(int id, int seat){
         if(!voyages.get(id).isSeatNumberValid(seat)){
             System.out.println(ErrorMessages.NO_SEAT);
@@ -346,6 +366,12 @@ public class VoyageManager{
         return true;
     }
 
+    /**
+     * Determines if a seat can be refunded.
+     * @param id the ID of the voyage
+     * @param seat the seat number to check
+     * @return {@code true} if the seat can be refunded, {@code false} if it cannot be refunded
+     */
     private boolean canSeatRefunded(int id, int seat){
         if(!voyages.get(id).isSeatNumberValid(seat)){
             System.out.println(ErrorMessages.NO_SEAT);
@@ -358,6 +384,12 @@ public class VoyageManager{
         return true;
     }
 
+    
+    /**
+     * Sells tickets for a specific voyage if the voyage ID and seat are valid.
+     * @param id the voyage ID
+     * @param seats an array of seats to be sold
+     */
     public void sellTickets(int id, int[] seats){
         if(!isVoyageIdValid(id)) return;
 
@@ -371,6 +403,11 @@ public class VoyageManager{
         System.out.println(InfoMessages.getSeatsSoldString(seats, id, voyages.get(id).getDeparture(), voyages.get(id).getArrival(), voyages.get(id).getRevenue() - beforeSell));
     }
 
+    /**
+     * Refunds tickets for a specific voyage, taking into account different rules for different bus types.
+     * @param id the voyage ID
+     * @param seats an array of seats to be refunded
+     */
     public void refundTickets(int id, int[] seats){
         if(!isVoyageIdValid(id)) return;
         if(voyages.get(id) instanceof MiniBus){
@@ -394,12 +431,31 @@ public class VoyageManager{
         System.out.println(InfoMessages.getSeatsRefundedString(seats, id, voyages.get(id).getDeparture(), voyages.get(id).getArrival(), beforeRefund - voyages.get(id).getRevenue()));
     }
 
+    /**
+     * Adds a standard bus voyage to the system.
+     * @param id the voyage ID
+     * @param departure the departure location
+     * @param arrival the arrival location
+     * @param row_count the number of rows in the bus
+     * @param seat_price the price per seat
+     * @param refundCut the percentage cut for refunds
+     */
     public void addStandardVoyage(int id, String departure, String arrival, int row_count, float seat_price, int refundCut){
         if (!isNewVoyageIdValid(id)) return;
         voyages.put(id, new StandardBus(id, row_count, departure, arrival, seat_price, refundCut));
         System.out.println(InfoMessages.getStandardVoyageInitializedString(id, departure, arrival, seat_price, row_count, refundCut));
     }
 
+    /**
+     * Adds a premium bus voyage to the system.
+     * @param id the voyage ID
+     * @param departure the departure location
+     * @param arrival the arrival location
+     * @param row_count the number of rows in the bus
+     * @param seat_price the price per seat
+     * @param refundCut the percentage cut for refunds
+     * @param premiumFee additional fee for premium seats
+     */
     public void addPremiumVoyage(int id, String departure, String arrival, int row_count, float seat_price, int refundCut, int premiumFee){
         if (!isNewVoyageIdValid(id)) return;
         PremiumBus premiumBus = new PremiumBus(id, row_count, departure, arrival, seat_price, refundCut, premiumFee);
@@ -407,12 +463,24 @@ public class VoyageManager{
         System.out.println(InfoMessages.getPremiumVoyageInitializedString(id, departure, arrival, seat_price, row_count, premiumBus.getPremiumPrice(), refundCut));
     }
 
+    /**
+     * Adds a minibus voyage to the system.
+     * @param id the voyage ID
+     * @param departure the departure location
+     * @param arrival the arrival location
+     * @param row_count the number of rows in the minibus
+     * @param seat_price the price per seat
+     */
     public void addMinibusVoyage(int id, String departure, String arrival, int row_count, float seat_price){
         if (!isNewVoyageIdValid(id)) return;
         voyages.put(id, new MiniBus(id, row_count, departure, arrival, seat_price));
         System.out.println(InfoMessages.getMinibusVoyageInitializedString(id, departure, arrival, seat_price, row_count));
     }
 
+    /**
+     * Cancels a voyage and removes it from the system if the voyage ID is valid.
+     * @param id the voyage ID
+     */
     public void cancelVoyage(int id){
         if (!isVoyageIdValid(id)) return;
         Voyage t = voyages.get(id);
@@ -420,11 +488,18 @@ public class VoyageManager{
         voyages.remove(id);
     }
 
+    /**
+     * Prints the layout and details of a specific voyage.
+     * @param id the voyage ID
+     */
     public void printVoyage(int id){
         if (!isVoyageIdValid(id)) return;
         voyages.get(id).printLayout();
     }
 
+    /**
+     * Generates a "Z Report" showing details and layout of all voyages.
+     */
     public void zReport(){
         System.out.println("Z Report:");
         System.out.println("----------------");
