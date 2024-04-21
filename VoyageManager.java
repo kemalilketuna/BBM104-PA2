@@ -52,15 +52,36 @@ class Voyage{
         return this.revenue;
     }
 
-    protected boolean isSeatNumberValid(int seatNumber){
+    public void increaseRevenue(float amount){
+        this.revenue += amount;
+    }
+
+    public void sellTicket(int seatNumber){
+        changeSeatStatus(seatNumber);
+        increaseRevenue(this.getSeatPrice());
+    }
+
+    protected void changeSeatStatus(int seatNumber){
+        int row = seatNumber / this.column_count;
+        int column = seatNumber % this.column_count;
+        this.seats[row][column] = !this.seats[row][column];
+    }
+
+    public boolean isSeatNumberValid(int seatNumber){
         int row = seatNumber / this.column_count;
         int column = seatNumber % this.column_count;
         return row >= 0 && row < this.row_count && column >= 0 && column < this.column_count;
     }
 
+    public boolean isSeatEmpty(int seatNumber){
+        int row = seatNumber / this.column_count;
+        int column = seatNumber % this.column_count;
+        return !this.seats[row][column];
+    }
+
     public void printLayout(){
-        System.out.println(InfoMessages.getVoyage(this.id));
-        System.out.println(InfoMessages.getVoyageRoute(this.departure, this.arrival));
+        System.out.println(InfoMessages.getVoyageString(this.id));
+        System.out.println(InfoMessages.getVoyageRouteString(this.departure, this.arrival));
         for(int i = 0; i < this.row_count; i++){
             for(int j = 0; j < this.column_count; j++){
                 System.out.print(this.seats[i][j] ? "X" : "*");
@@ -69,14 +90,14 @@ class Voyage{
             }
             System.out.println();
         }
-        System.out.println(InfoMessages.getRevenueMessage(this.revenue));
+        System.out.println(InfoMessages.getRevenueMessageString(this.revenue));
     }
 
     public void processVoyageCancelling(){
-        System.out.println(InfoMessages.getVoyageSuccesfullyCancelled(this.id));
+        System.out.println(InfoMessages.getVoyageSuccesfullyCancelledString(this.id));
         System.out.println(InfoMessages.VOYAGE_DETAILS);
-        System.out.println(InfoMessages.getRevenueMessage(this.revenue));
-        System.out.println(InfoMessages.getVoyageRoute(this.departure, this.arrival));
+        System.out.println(InfoMessages.getRevenueMessageString(this.revenue));
+        System.out.println(InfoMessages.getVoyageRouteString(this.departure, this.arrival));
       
         for(int i = 0; i < this.row_count; i++){
             for(int j = 0; j < this.column_count; j++){
@@ -93,7 +114,7 @@ class Voyage{
                 this.revenue -= this.seat_price;
             }
         }
-        System.out.println(InfoMessages.getRevenueMessage(this.revenue));
+        System.out.println(InfoMessages.getRevenueMessageString(this.revenue));
     }
 }
 
@@ -111,19 +132,27 @@ class StandardBus extends Voyage{
     public float getRefundAmount(){
         return this.refundAmount;
     }
+
+    public void refundTicket(int seatNumber){
+        changeSeatStatus(seatNumber);
+        increaseRevenue(-this.getRefundAmount());
+    }
 }
 
 class PremiumBus extends Voyage{
     private float refundAmount;
     private float premiumPrice;
+    private float premiumRefundAmount;
 
     public PremiumBus(int id, int row_count, String departure, String arrival, int seat_price, int refundCut, int premiumFee){
         super(id, row_count, departure, arrival, 3, seat_price);
         refundAmount = (100.f - (float) refundCut / 100.f) * seat_price;
         premiumPrice = (100.f + (float) premiumFee / 100.f) * seat_price;
+        premiumRefundAmount = (100.f - (float) refundCut / 100.f) * premiumPrice;
         // round to 2 decimal places float
         refundAmount = (float) Math.round(refundAmount * 100) / 100;
         premiumPrice = (float) Math.round(premiumPrice * 100) / 100;
+        premiumRefundAmount = (float) Math.round(premiumRefundAmount * 100) / 100;
     }
 
     public float getRefundAmount(){
@@ -134,11 +163,41 @@ class PremiumBus extends Voyage{
         return this.premiumPrice;
     }
 
+    public float getPremiumRefundAmount(){
+        return this.premiumRefundAmount;
+    }
+
+    private boolean isPremiumSeat(int seatNumber){
+        return seatNumber % this.getColumnCount() == 0;
+    }
+
+    public void sellTicket(int seatNumber){
+        if(isPremiumSeat(seatNumber)){
+            changeSeatStatus(seatNumber);
+            increaseRevenue(this.getPremiumPrice());
+        }
+        else{
+            changeSeatStatus(seatNumber);
+            increaseRevenue(this.getSeatPrice());
+        }
+    }
+
+    public void refundTicket(int seatNumber){
+        if(isPremiumSeat(seatNumber)){
+            changeSeatStatus(seatNumber);
+            increaseRevenue(-this.getPremiumRefundAmount());
+        }
+        else{
+            changeSeatStatus(seatNumber);
+            increaseRevenue(-this.getRefundAmount());
+        }
+    }
+
     public void processVoyageCancelling(){
-        System.out.println(InfoMessages.getVoyageSuccesfullyCancelled(this.getId()));
+        System.out.println(InfoMessages.getVoyageSuccesfullyCancelledString(this.getId()));
         System.out.println(InfoMessages.VOYAGE_DETAILS);
-        System.out.println(InfoMessages.getRevenueMessage(this.getRevenue()));
-        System.out.println(InfoMessages.getVoyageRoute(this.getDeparture(), this.getArrival()));
+        System.out.println(InfoMessages.getRevenueMessageString(this.getRevenue()));
+        System.out.println(InfoMessages.getVoyageRouteString(this.getDeparture(), this.getArrival()));
       
         for(int i = 0; i < this.getRowCount(); i++){
             for(int j = 0; j < this.getColumnCount(); j++){
@@ -157,7 +216,7 @@ class PremiumBus extends Voyage{
             }
         }
 
-        System.out.println(InfoMessages.getRevenueMessage(this.revenue));
+        System.out.println(InfoMessages.getRevenueMessageString(this.revenue));
     }
 }
 
@@ -173,7 +232,7 @@ public class VoyageManager{
 
     /*
     Command list
-    INIT_VOYAGE
+    INIT_VOYAGE done
     SELL_TICKET
     REFUND_TICKET
     PRINT_VOYAGE
@@ -207,27 +266,82 @@ public class VoyageManager{
         return true;
     }
 
-    private boolean isSeatEmpty(int id, int seat){
+    private boolean canSeatSold(int id, int seat){
         if(!voyages.get(id).isSeatNumberValid(seat)){
             System.out.println(ErrorMessages.NO_SEAT);
+            return false;
+        }
+        if(!voyages.get(id).isSeatEmpty(seat)){
+            System.out.println(ErrorMessages.SEAT_ALREADY_SOLD);
             return false;
         }
         return true;
     }
 
+    private boolean canSeatRefunded(int id, int seat){
+        if(!voyages.get(id).isSeatNumberValid(seat)){
+            System.out.println(ErrorMessages.NO_SEAT);
+            return false;
+        }
+        if(voyages.get(id).isSeatEmpty(seat)){
+            System.out.println(ErrorMessages.SEAT_ALREADY_EMPTY);
+            return false;
+        }
+        return true;
+    }
+
+    public void sellTickets(int id, int[] seats){
+        if(!isVoyageIdValid(id)) return;
+
+        for(int seat : seats){
+            if(!canSeatSold(id, seat)) return;
+        }
+        float beforeSell = voyages.get(id).getRevenue();
+        for(int seat : seats){
+            voyages.get(id).sellTicket(seat);
+        }
+        System.out.println(InfoMessages.getSeatsSoldString(seats, id, voyages.get(id).getDeparture(), voyages.get(id).getArrival(), voyages.get(id).getRevenue() - beforeSell));
+    }
+
+    public void refundTickets(int id, int[] seats){
+        if(!isVoyageIdValid(id)) return;
+        if(voyages.get(id) instanceof MiniBus){
+            System.out.println(ErrorMessages.MINIBUS_TICKETS_NOT_REFUNDABLE);
+            return;
+        }
+        for(int seat : seats){
+            if(!canSeatRefunded(id, seat)) return;
+        }
+        float beforeRefund = voyages.get(id).getRevenue();
+        if(voyages.get(id) instanceof StandardBus){
+            for(int seat : seats){
+                ((StandardBus) voyages.get(id)).refundTicket(seat);
+            }
+        }
+        else if(voyages.get(id) instanceof PremiumBus){
+            for(int seat : seats){
+                ((PremiumBus) voyages.get(id)).refundTicket(seat);
+            }
+        }
+        System.out.println(InfoMessages.getSeatsRefundedString(seats, id, voyages.get(id).getDeparture(), voyages.get(id).getArrival(), beforeRefund - voyages.get(id).getRevenue()));
+    }
+
     public void addStandardVoyage(int id, String departure, String arrival, int row_count, int seat_price, int refundCut){
         if (!isNewVoyageIdValid(id)) return;
         voyages.put(id, new StandardBus(id, row_count, departure, arrival, seat_price, refundCut));
+        System.out.println(InfoMessages.getStandardVoyageInitializedString(id, departure, arrival, seat_price, row_count, refundCut));
     }
 
     public void addPremiumVoyage(int id, String departure, String arrival, int row_count, int seat_price, int refundCut, int premiumFee){
         if (!isNewVoyageIdValid(id)) return;
         voyages.put(id, new PremiumBus(id, row_count, departure, arrival, seat_price, refundCut, premiumFee));
+        System.out.println(InfoMessages.getPremiumVoyageInitializedString(id, departure, arrival, seat_price, row_count, premiumFee, row_count, refundCut));
     }
 
-    public void addMiniVoyage(int id, String departure, String arrival, int row_count, int seat_price){
+    public void addMinibusVoyage(int id, String departure, String arrival, int row_count, int seat_price){
         if (!isNewVoyageIdValid(id)) return;
         voyages.put(id, new MiniBus(id, row_count, departure, arrival, seat_price));
+        System.out.println(InfoMessages.getMinibusVoyageInitializedString(id, departure, arrival, seat_price, row_count));
     }
 
     public void cancelVoyage(int id){
@@ -235,10 +349,12 @@ public class VoyageManager{
         Voyage t = voyages.get(id);
         t.processVoyageCancelling();
         voyages.remove(id);
+        System.out.println(InfoMessages.getVoyageSuccesfullyCancelledString(id));
     }
 
-    public void sellTickets(int id, int[] seats){
-    
+    public void printVoyage(int id){
+        if (!isVoyageIdValid(id)) return;
+        voyages.get(id).printLayout();
     }
 
     public void zReport(){
