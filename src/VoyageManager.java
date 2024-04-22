@@ -50,8 +50,6 @@ class Voyage {
      */
     public void increaseRevenue(float amount) {
         this.revenue += amount;
-        // Round to 2 decimal places
-        // this.revenue = (float) Math.round(this.revenue * 100) / 100;
     }
 
     /**
@@ -157,8 +155,6 @@ class StandardBus extends Voyage {
     public StandardBus(int id, int row_count, String departure, String arrival, float seat_price, int refundCut) {
         super(id, row_count, departure, arrival, 4, seat_price);
         refundAmount = ((100.f - (float) refundCut) / 100.f) * seat_price;
-        // Round to 2 decimal places
-        // refundAmount = (float) Math.round(refundAmount * 100) / 100;
     }
 
     /**
@@ -208,10 +204,6 @@ class PremiumBus extends Voyage {
         refundAmount = ((100.f - (float) refundCut) / 100.f) * seat_price;
         premiumPrice = ((100.f + (float) premiumFee) / 100.f) * seat_price;
         premiumRefundAmount = ((100.f - (float) refundCut) / 100.f) * premiumPrice;
-        // Round to 2 decimal places
-        // this.refundAmount = (float) Math.round(refundAmount * 100) / 100;
-        // this.premiumPrice = (float) Math.round(premiumPrice * 100) / 100;
-        // this.premiumRefundAmount = (float) Math.round(premiumRefundAmount * 100) / 100;
     }
 
     /**
