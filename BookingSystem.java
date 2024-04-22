@@ -16,12 +16,15 @@ class CommandExecuter {
         try{
             switch (tokens[1]) {
                 case "Minibus":
+                    if(tokens.length != 7) throw new Exception("Invalid number of arguments");
                     transportManager.addMinibusVoyage(Integer.parseInt(tokens[2]), tokens[3], tokens[4], Integer.parseInt(tokens[5]), Float.parseFloat(tokens[6]));
                     break;
                 case "Standard":
+                    if(tokens.length != 8) throw new Exception("Invalid number of arguments");
                     transportManager.addStandardVoyage(Integer.parseInt(tokens[2]), tokens[3], tokens[4], Integer.parseInt(tokens[5]), Float.parseFloat(tokens[6]), Integer.parseInt(tokens[7]));
                     break;
                 case "Premium":
+                    if(tokens.length != 9) throw new Exception("Invalid number of arguments");
                     transportManager.addPremiumVoyage(Integer.parseInt(tokens[2]), tokens[3], tokens[4], Integer.parseInt(tokens[5]), Float.parseFloat(tokens[6]), Integer.parseInt(tokens[7]), Integer.parseInt(tokens[8]));
                     break;
                 default:
@@ -38,6 +41,7 @@ class CommandExecuter {
      */
     private void cancelVoyageCommand(String[] tokens){
         try{
+            if (tokens.length != 2) throw new Exception("Invalid number of arguments");
             transportManager.cancelVoyage(Integer.parseInt(tokens[1]));
         }
         catch(Exception e){
@@ -51,6 +55,7 @@ class CommandExecuter {
      */
     private void sellTicketCommand(String[] tokens){
         try{
+            if (tokens.length != 3) throw new Exception("Invalid number of arguments");
             String[] seats = tokens[2].split("_");
             int[] seatNumbers = new int[seats.length];
             for(int i = 0; i < seats.length; i++){
@@ -68,6 +73,7 @@ class CommandExecuter {
      */
     private void refundTicketCommand(String[] tokens){
         try{
+            if (tokens.length != 3) throw new Exception("Invalid number of arguments");
             String[] seats = tokens[2].split("_");
             int[] seatNumbers = new int[seats.length];
             for(int i = 0; i < seats.length; i++){
@@ -82,8 +88,13 @@ class CommandExecuter {
     /**
      * Executes the command to generate a Z report, which prints details and layout of all voyages.
      */
-    protected void zReportCommand(){
-        transportManager.zReport();
+    protected void zReportCommand(String[] tokens){
+        try{
+            if (tokens.length != 1) throw new Exception("Invalid number of arguments");
+            transportManager.zReport();
+        }catch(Exception e){
+            System.out.println(ErrorMessages.getErrorgousUsageString("Z_REPORT"));
+        }
     }
 
     /**
@@ -92,6 +103,7 @@ class CommandExecuter {
      */
     private void printVoyageCommand(String[] tokens){
         try{
+            if (tokens.length != 2) throw new Exception("Invalid number of arguments");
             transportManager.printVoyage(Integer.parseInt(tokens[1]));
         }catch(Exception e){
             System.out.println(ErrorMessages.getErrorgousUsageString(tokens[0]));
@@ -120,7 +132,7 @@ class CommandExecuter {
                 refundTicketCommand(tokens);
                 break;
             case "Z_REPORT":
-                zReportCommand();
+                zReportCommand(tokens);
                 break;
             case "PRINT_VOYAGE":
                 printVoyageCommand(tokens);
@@ -155,7 +167,7 @@ public class BookingSystem{
 
         // check if the last command was not Z_REPORT
         if(!prevLine.equals("Z_REPORT")){
-            commandExecuter.zReportCommand();
+            commandExecuter.zReportCommand(new String[]{"Z_REPORT"});
         }
 
         // close the file

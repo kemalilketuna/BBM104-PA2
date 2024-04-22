@@ -421,6 +421,10 @@ public class VoyageManager {
         if(!isVoyageIdValid(id)) return;
 
         for(int seat : seats){
+            if(seat < 0){
+                System.out.println(ErrorMessages.getSeatIdMustPositiveString(seat));
+                return;
+            }
             if(!canSeatSold(id, seat)) return;
         }
         float beforeSell = voyages.get(id).getRevenue();
@@ -443,6 +447,10 @@ public class VoyageManager {
             return;
         }
         for(int seat : seats){
+            if(seat < 0){
+                System.out.println(ErrorMessages.getSeatIdMustPositiveString(seat));
+                return;
+            }
             if(!canSeatRefunded(id, seat)) return;
         }
         float beforeRefund = voyages.get(id).getRevenue();
@@ -470,6 +478,18 @@ public class VoyageManager {
      */
     public void addStandardVoyage(int id, String departure, String arrival, int row_count, float seat_price, int refundCut){
         if (!isNewVoyageIdValid(id)) return;
+        if (row_count < 1){
+            System.out.println(ErrorMessages.getSeatRowMustPositiveString(row_count));
+            return;
+        }
+        if (seat_price <= 0){
+            System.out.println(ErrorMessages.getPriceMustPositiveString(seat_price));
+            return;
+        }
+        if (refundCut < 0 || refundCut > 100){
+            System.out.println(ErrorMessages.getRefundCutMustInRangeString(refundCut));
+            return;
+        }
         voyages.put(id, new StandardBus(id, row_count, departure, arrival, seat_price, refundCut));
         System.out.println(InfoMessages.getStandardVoyageInitializedString(id, departure, arrival, seat_price, row_count, refundCut));
     }
@@ -486,6 +506,22 @@ public class VoyageManager {
      */
     public void addPremiumVoyage(int id, String departure, String arrival, int row_count, float seat_price, int refundCut, int premiumFee){
         if (!isNewVoyageIdValid(id)) return;
+        if (row_count < 1){
+            System.out.println(ErrorMessages.getSeatRowMustPositiveString(row_count));
+            return;
+        }
+        if (seat_price <= 0){
+            System.out.println(ErrorMessages.getPriceMustPositiveString(seat_price));
+            return;
+        }
+        if (refundCut < 0 || refundCut > 100){
+            System.out.println(ErrorMessages.getRefundCutMustInRangeString(refundCut));
+            return;
+        }
+        if (premiumFee < 0){
+            System.out.println(ErrorMessages.getPremiumFeeMustNonNegativeString(premiumFee));
+            return;
+        }
         PremiumBus premiumBus = new PremiumBus(id, row_count, departure, arrival, seat_price, refundCut, premiumFee);
         voyages.put(id, premiumBus);
         System.out.println(InfoMessages.getPremiumVoyageInitializedString(id, departure, arrival, seat_price, row_count, premiumBus.getPremiumPrice(), refundCut));
@@ -501,6 +537,14 @@ public class VoyageManager {
      */
     public void addMinibusVoyage(int id, String departure, String arrival, int row_count, float seat_price){
         if (!isNewVoyageIdValid(id)) return;
+        if (row_count < 1){
+            System.out.println(ErrorMessages.getSeatRowMustPositiveString(row_count));
+            return;
+        }
+        if (seat_price <= 0){
+            System.out.println(ErrorMessages.getPriceMustPositiveString(seat_price));
+            return;
+        }
         voyages.put(id, new MiniBus(id, row_count, departure, arrival, seat_price));
         System.out.println(InfoMessages.getMinibusVoyageInitializedString(id, departure, arrival, seat_price, row_count));
     }
