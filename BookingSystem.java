@@ -147,14 +147,14 @@ class CommandExecuter {
 
 public class BookingSystem{
     public static void main(String[] args) throws Exception{
-        // original print stream
+        // Original print stream
         PrintStream originalOut = System.out;
-        // change print stream to file
+        // Change print stream to file
         System.setOut(new PrintStream(new FileOutputStream(args[1])));
 
         CommandExecuter commandExecuter = new CommandExecuter();
 
-        // read file line by line from args[0]
+        // Read file line by line from args[0]
         BufferedReader br = new BufferedReader(new FileReader(args[0]));
         String prevLine = "";
         String line;        
@@ -165,15 +165,28 @@ public class BookingSystem{
             prevLine = line;
         }
 
-        // check if the last command was not Z_REPORT
+        // Check if the last command was not Z_REPORT
         if(!prevLine.equals("Z_REPORT")){
             commandExecuter.zReportCommand(new String[]{"Z_REPORT"});
         }
 
-        // close the file
+        // Close the file
         br.close();
 
-        // reset print stream
+        // Reset print stream
         System.setOut(originalOut);
+        
+        // Remove the last newline character from the file
+        try (RandomAccessFile f = new RandomAccessFile(args[1], "rw")) {
+            long length = f.length();
+            if (length == 0) return; // Check if the file is empty.
+
+            f.seek(length - 1); // Start checking from the last byte.
+            if (f.readByte() == 10) { // Check if the last byte is a newline.
+                f.setLength(length - 1); // Remove last byte if it's a newline.
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred.");
+        }
     }
 }
