@@ -207,7 +207,7 @@ X | * *
 Revenue: 4600.00
 ----------------
 COMMAND: SELL_TICKET	10	15_12_2_3
-ERROR: One or more seats are already sold!
+ERROR: One or more seats already sold!
 COMMAND: Z_REPORT
 Z Report:
 ----------------

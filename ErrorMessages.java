@@ -13,7 +13,7 @@ public class ErrorMessages {
     private static final String NO_VOYAGE_WITH_ID = "ERROR: There is no voyage with ID of %d!";
     public static final String NO_SEAT = "ERROR: There is no such a seat!";
     private static final String SEATID_MUST_POSITIVE = "ERROR: %d is not a positive integer, seat number must be a positive integer!";
-    public static final String SEAT_ALREADY_SOLD = "ERROR: One or more seats are already sold!";
+    public static final String SEAT_ALREADY_SOLD = "ERROR: One or more seats already sold!";
     public static final String SEAT_ALREADY_EMPTY = "ERROR: One or more seats are already empty!";
     public static final String SEAT_ROW_MUST_POSITIVE = "ERROR: %d is not a positive integer, number of seat rows of a voyage must be a positive integer!";
     public static final String PRICE_MUST_POSITIVE = "ERROR: %d is not a positive number, price must be a positive number!";
