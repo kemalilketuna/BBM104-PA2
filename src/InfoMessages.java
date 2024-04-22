@@ -15,10 +15,7 @@ public class InfoMessages {
     private static final String MINIBUS_VOYAGE_INITIALIZED = "Voyage %d was initialized as a minibus (2) voyage from %s to %s with %.2f TL priced %d regular seats. Note that minibus tickets are not refundable.";
     private static final String SEATS_SOLD = "Seat %s of the Voyage %d from %s to %s was successfully sold for %.2f TL.";
     private static final String SEATS_REFUNDED = "Seat %s of the Voyage %d from %s to %s was successfully refunded for %.2f TL.";
-    public static final String NO_VOYAGES_AVAILABLE = "No Voyages Available!";
-    public static final String LINE = "----------------";
-    public static final String Z_REPORT = "Z Report:";
-    
+
     /**
      * Generates a message indicating successful cancellation of a voyage.
      *
