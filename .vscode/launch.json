@@ -6,10 +6,24 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Current File",
+            "name": "Test1",
             "request": "launch",
             "mainClass": "${file}",
-            "args": ["BBM104_S24_PA2_Sample_IO_v1.0.4/i3.txt", "output.txt"],
+            "args": ["BBM104_S24_PA2_Sample_IO_v1.0.4/i1.txt", "output1.txt"],
+        },
+        {
+            "type": "java",
+            "name": "Test2",
+            "request": "launch",
+            "mainClass": "${file}",
+            "args": ["BBM104_S24_PA2_Sample_IO_v1.0.4/i2.txt", "output2.txt"],
+        },
+                {
+            "type": "java",
+            "name": "Test3",
+            "request": "launch",
+            "mainClass": "${file}",
+            "args": ["BBM104_S24_PA2_Sample_IO_v1.0.4/i3.txt", "output3.txt"],
         },
     ]
 }

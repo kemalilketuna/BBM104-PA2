@@ -50,6 +50,8 @@ class Voyage {
      */
     public void increaseRevenue(float amount) {
         this.revenue += amount;
+        // Round to 2 decimal places
+        this.revenue = (float) Math.round(this.revenue * 100) / 100;
     }
 
     /**
@@ -122,8 +124,9 @@ class Voyage {
       
         for (int i = 0; i < this.row_count; i++) {
             for (int j = 0; j < this.column_count; j++) {
+                if(this.seats[i][j]) this.increaseRevenue(-this.seat_price);
                 System.out.print(this.seats[i][j] ? "X" : "*");
-                if (column_count == 3 && j == 0) System.out.print(" |");
+                // if (column_count == 3 && j == 0) System.out.print(" |");
                 if (column_count == 4 && j == 1) System.out.print(" |");
                 if (j != column_count - 1) System.out.print(" ");
             }
@@ -132,7 +135,6 @@ class Voyage {
         System.out.println(InfoMessages.getRevenueMessageString(this.revenue));
     }
 }
-
 
 
 /**
@@ -207,9 +209,9 @@ class PremiumBus extends Voyage {
         premiumPrice = ((100.f + (float) premiumFee) / 100.f) * seat_price;
         premiumRefundAmount = ((100.f - (float) refundCut) / 100.f) * premiumPrice;
         // Round to 2 decimal places
-        refundAmount = (float) Math.round(refundAmount * 100) / 100;
-        premiumPrice = (float) Math.round(premiumPrice * 100) / 100;
-        premiumRefundAmount = (float) Math.round(premiumRefundAmount * 100) / 100;
+        this.refundAmount = (float) Math.round(refundAmount * 100) / 100;
+        this.premiumPrice = (float) Math.round(premiumPrice * 100) / 100;
+        this.premiumRefundAmount = (float) Math.round(premiumRefundAmount * 100) / 100;
     }
 
     /**
@@ -281,6 +283,31 @@ class PremiumBus extends Voyage {
             changeSeatStatus(seatNumber);
             increaseRevenue(-this.getRefundAmount());
         }
+    }
+
+    public void processVoyageCancelling() {
+        System.out.println(InfoMessages.getVoyageSuccesfullyCancelledString(this.getId()));
+        System.out.println(InfoMessages.VOYAGE_DETAILS);
+        System.out.println(InfoMessages.getVoyageString(this.getId()));
+        System.out.println(InfoMessages.getVoyageRouteString(this.getDeparture(), this.getArrival()));
+        
+        boolean[][] seats = getSeats();
+        int column_count = getColumnCount();
+
+        for (int i = 0; i < this.getRowCount(); i++) {
+            for (int j = 0; j < this.getColumnCount(); j++) {
+                if(seats[i][j]){
+                    if(j % column_count == 0) increaseRevenue(-this.getPremiumPrice());
+                    else increaseRevenue(-this.getSeatPrice());
+                }
+                System.out.print(seats[i][j] ? "X" : "*");
+                if (column_count == 3 && j == 0) System.out.print(" |");
+                // if (column_count == 4 && j == 1) System.out.print(" |");
+                if (j != column_count - 1) System.out.print(" ");
+            }
+            System.out.println();
+        }
+        System.out.println(InfoMessages.getRevenueMessageString(this.getRevenue()));
     }
 }
 
@@ -400,7 +427,8 @@ public class VoyageManager {
         for(int seat : seats){
             voyages.get(id).sellTicket(seat);
         }
-        System.out.println(InfoMessages.getSeatsSoldString(seats, id, voyages.get(id).getDeparture(), voyages.get(id).getArrival(), voyages.get(id).getRevenue() - beforeSell));
+        float afterSell = voyages.get(id).getRevenue();
+        System.out.println(InfoMessages.getSeatsSoldString(seats, id, voyages.get(id).getDeparture(), voyages.get(id).getArrival(), afterSell - beforeSell));
     }
 
     /**
