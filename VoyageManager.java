@@ -51,7 +51,7 @@ class Voyage {
     public void increaseRevenue(float amount) {
         this.revenue += amount;
         // Round to 2 decimal places
-        this.revenue = (float) Math.round(this.revenue * 100) / 100;
+        // this.revenue = (float) Math.round(this.revenue * 100) / 100;
     }
 
     /**
@@ -158,7 +158,7 @@ class StandardBus extends Voyage {
         super(id, row_count, departure, arrival, 4, seat_price);
         refundAmount = ((100.f - (float) refundCut) / 100.f) * seat_price;
         // Round to 2 decimal places
-        refundAmount = (float) Math.round(refundAmount * 100) / 100;
+        // refundAmount = (float) Math.round(refundAmount * 100) / 100;
     }
 
     /**
@@ -209,9 +209,9 @@ class PremiumBus extends Voyage {
         premiumPrice = ((100.f + (float) premiumFee) / 100.f) * seat_price;
         premiumRefundAmount = ((100.f - (float) refundCut) / 100.f) * premiumPrice;
         // Round to 2 decimal places
-        this.refundAmount = (float) Math.round(refundAmount * 100) / 100;
-        this.premiumPrice = (float) Math.round(premiumPrice * 100) / 100;
-        this.premiumRefundAmount = (float) Math.round(premiumRefundAmount * 100) / 100;
+        // this.refundAmount = (float) Math.round(refundAmount * 100) / 100;
+        // this.premiumPrice = (float) Math.round(premiumPrice * 100) / 100;
+        // this.premiumRefundAmount = (float) Math.round(premiumRefundAmount * 100) / 100;
     }
 
     /**
@@ -432,11 +432,12 @@ public class VoyageManager {
             voyages.get(id).sellTicket(seat);
         }
         float afterSell = voyages.get(id).getRevenue();
+        float amount = afterSell - beforeSell;
         System.out.println(InfoMessages.getSeatsSoldString(seats, id, voyages.get(id).getDeparture(), voyages.get(id).getArrival(), afterSell - beforeSell));
     }
 
     /**
-     * Refunds tickets for a specific voyage, taking into account different rules for different bus types.
+     * Refunds tickets for a specific voyage, taking into account different rules for different bus types. 
      * @param id the voyage ID
      * @param seats an array of seats to be refunded
      */
